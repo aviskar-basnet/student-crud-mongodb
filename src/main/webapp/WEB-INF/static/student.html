@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+<title>STUDENT CRUD - HOME</title>
+
+<link rel="stylesheet"
+	href="/static/assets/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/css/style.css">
+
+<script src="/static/assets/angular-1.5.0/angular.min.js"></script>
+<script src="/static/assets/angular-1.5.0/angular-animate.min.js"></script>
+<script src="/static/assets/angular-1.5.0/angular-aria.min.js"></script>
+<script src="/static/assets/angular-1.5.0/angular-messages.min.js"></script>
+
+<!-- Angular Material Library -->
+<link rel="stylesheet"
+	href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+<script
+	src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+
+<script type="text/javascript">
+	var studentApp = angular.module("studentApp", [ "ngMaterial" ]);
+	var studentController = studentApp
+			.controller(
+					"studentController",
+					[
+							"$scope",
+							"$http",
+							"$log",
+							"$mdDialog",
+							function($scope, $http, $log, $mdDialog) {
+
+								// Getting all student at the very begining.
+								$log.info("/api/rest/student [GET]...");
+								$http({
+									method : 'GET',
+									url : '/api/rest/student'
+								}).then(function successCallback(response) {
+									$log.info(":: Success ::");
+									$scope.students = response.data;
+								}, function errorCallback(response) {
+									$log.warn(":: Failed ::");
+								});
+
+								// New row manipulation for adding new student.
+								$scope.newRowVisibleStatus = false;
+								$scope.showNewRow = function() {
+									$log.info("New Row :: Shown");
+									$scope.newRowVisibleStatus = true;
+								};
+								$scope.hideNewRow = function() {
+									$log.info("New Row :: Hidden");
+									$scope.newRowVisibleStatus = false;
+									// Resetting $scope.newStudent object.
+									$scope.newStudent = new Object();
+									$scope.newStudent.session = $scope.sessions[0];
+								};
+
+								// Array of available sessions.
+								$scope.sessions = [ "Morning", "Afternoon",
+										"Evening" ];
+
+								// Student's object for adding new student with new row.
+								$scope.newStudent = new Object();
+								$scope.newStudent.session = $scope.sessions[0];
+
+								// Adding new student with help of $scope.newStudent object.
+								$scope.addStudent = function() {
+									$log.info("Adding new student...");
+									var newStudentAsJsonString = angular
+											.toJson($scope.newStudent);
+									$log.info("New Student As Json :: "
+											+ newStudentAsJsonString);
+									// Validating new student
+									if ($scope.newStudent.registrationNumber == null
+											|| $scope.newStudent.registrationNumber
+													.trim() == "") {
+										$log.warn("Error...");
+										$scope.newStudent.error = true;
+										return;
+									}
+									$log.info("/api/rest/student [POST]...");
+									$http({
+										method : 'POST',
+										url : '/api/rest/student',
+										headers : {
+											'Content-Type' : 'application/json'
+										},
+										data : newStudentAsJsonString
+									}).then(function successCallback(response) {
+										$log.info(":: Success ::");
+										$scope.students.push(response.data);
+										// Resetting $scope.newStudent object.
+										$scope.newStudent = new Object();
+										var s = $scope.newStudent;
+										s.session = $scope.sessions[0];
+									}, function errorCallback(response) {
+										$log.warn(":: Fail ::");
+										$scope.newStudent.error = true;
+									});
+								};
+
+								$scope.studentForEdit = null;
+								$scope.showEditRow = function(student) {
+									$scope.studentForEdit = angular
+											.fromJson(angular.toJson(student));
+									$scope.students.forEach(function(
+											tempStudent) {
+										tempStudent.editStatus = false;
+									});
+									student.editStatus = true;
+								};
+
+								$scope.hideEditRow = function(student) {
+									student.fullName = $scope.studentForEdit.fullName;
+									student.registrationNumber = $scope.studentForEdit.registrationNumber;
+									student.address = $scope.studentForEdit.address;
+									student.email = $scope.studentForEdit.email;
+									student.mobileNo = $scope.studentForEdit.mobileNo;
+									student.session = $scope.studentForEdit.session;
+									student.error = false;
+									student.editStatus = false;
+								};
+
+								$scope.saveEditedStudent = function(student) {
+									$log.info("Updating student...");
+									var studentAsJsonString = angular
+											.toJson(student);
+									$log.info("Student As Json :: "
+											+ studentAsJsonString);
+									// Validating student for update
+									if (student.registrationNumber == null
+											|| student.registrationNumber
+													.trim() == "") {
+										$log.warn("Error...");
+										student.error = true;
+										return;
+									}
+									$log.info("/api/rest/student [PUT]...");
+									$http({
+										method : 'PUT',
+										url : '/api/rest/student',
+										headers : {
+											'Content-Type' : 'application/json'
+										},
+										data : studentAsJsonString
+									}).then(function successCallback(response) {
+										$log.info(":: Success ::");
+										student.editStatus = false;
+									}, function errorCallback(response) {
+										$log.warn(":: Failed ::");
+										student.error = true;
+									});
+								};
+
+								$scope.hideStudentError = function(student) {
+									student.error = false;
+								};
+
+								$scope.deleteStudent = function(id, event) {
+									var confirm = $mdDialog
+											.confirm()
+											.title(
+													"Would you want to remove student's info?")
+											.textContent(
+													"This process deletes the student's info permanently.")
+											.targetEvent(event).ok(
+													"Yes, I'm sure.").cancel(
+													"No, I'm not sure.");
+									$mdDialog.show(confirm).then(function() {
+										$log.info("Deleting Student...");
+										var url = '/api/rest/student/';
+										$log.info(url + id + " [DELETE]...");
+										$http({
+											method : 'DELETE',
+											url : url + id
+										}).then(function success(response) {
+											$log.info(":: Success ::");
+										}, function error(response) {
+											$log.warn(":: Failed ::");
+										});
+										var tempStudents = [];
+										$scope.students.forEach(function(s) {
+											if (s.id != id) {
+												tempStudents.push(s);
+											}
+										});
+										$scope.students = tempStudents;
+									}, function() {
+										$log.info("Cancelling Deletion...");
+									});
+								};
+							} ]);
+</script>
+
+</head>
+<body ng-app="studentApp">
+	<div id="studentGrid" ng-controller="studentController">
+
+		<!-- Info Messages -->
+		<h4 style="text-align: center; padding: 30px 0 0; margin: 0;">Student
+			Crud - Spring Boot, MongoDB, AngularJS, Bootstrap, Angular Material</h4>
+		<h5 style="text-align: center; padding: 10px 0 20px; margin: 0;">(Note
+			: Registration No. must be non-empty & unique.)</h5>
+
+		<!-- Student's grid or table starts. -->
+		<table id="studentTable" class="table table-striped"
+			style="table-layout: fixed;">
+			<tr>
+				<th>Full Name</th>
+				<th style="width: 17%;">Registration No.</th>
+				<th style="width: 12%;">Address</th>
+				<th style="width: 18%;">Email Address</th>
+				<th style="width: 12%;">Mobile No.</th>
+				<th style="width: 10%;">Session</th>
+				<th style="width: 16%;"><button type="button"
+						class="btn btn-primary btn-small" ng-click="showNewRow()">+</button></th>
+			</tr>
+
+			<!-- Row to maintain the even & odd row in table. -->
+			<tr ng-show="neverVisible">
+			</tr>
+
+			<!-- Row for adding new student. -->
+			<tr ng-show="newRowVisibleStatus">
+				<td><input type="text" placeholder="Full Name"
+					ng-model="newStudent.fullName" class="form-control"></td>
+				<td><input type="text" placeholder="Registration No."
+					ng-model="newStudent.registrationNumber" class="form-control"
+					ng-class="{'input-error': newStudent.error}"
+					ng-focus="hideStudentError(newStudent)"></td>
+				<td><input type="text" placeholder="Address"
+					ng-model="newStudent.address" class="form-control"></td>
+				<td><input type="text" placeholder="Email Address"
+					ng-model="newStudent.email" class="form-control"></td>
+				<td><input type="text" placeholder="Mobile No."
+					ng-model="newStudent.mobileNo" class="form-control"></td>
+				<td><select ng-model="newStudent.session" class="form-control">
+						<option ng-repeat="session in sessions" value="{{session}}">{{session}}</option>
+				</select></td>
+				<td>
+					<button type="button" class="btn btn-success btn-small btn-row"
+						ng-click="addStudent()">Save</button>
+					<button type="button" class="btn btn-danger btn-small btn-row"
+						ng-click="hideNewRow()">Cancel</button>
+				</td>
+			</tr>
+
+			<tr ng-repeat="student in students">
+
+				<!-- For displaying student's info. -->
+				<td ng-show="!student.editStatus"><h5>{{student.fullName}}</h5></td>
+				<td ng-show="!student.editStatus"><h5>{{student.registrationNumber}}</h5></td>
+				<td ng-show="!student.editStatus"><h5>{{student.address}}</h5></td>
+				<td ng-show="!student.editStatus"><h5>{{student.email}}</h5></td>
+				<td ng-show="!student.editStatus"><h5>{{student.mobileNo}}</h5></td>
+				<td ng-show="!student.editStatus"><h5>{{student.session}}</h5></td>
+				<td ng-show="!student.editStatus">
+					<button type="button" class="btn btn-success btn-small btn-row"
+						ng-click="showEditRow(student)">Edit</button>
+					<button type="button" class="btn btn-danger btn-small btn-row"
+						ng-click="deleteStudent(student.id, $event)">Delete</button>
+				</td>
+
+				<!-- For editing student's info. -->
+				<td ng-show="student.editStatus"><input type="text"
+					placeholder="Full Name" ng-model="student.fullName"
+					class="form-control"></td>
+				<td ng-show="student.editStatus"><input type="text"
+					placeholder="Registration No."
+					ng-model="student.registrationNumber" class="form-control"
+					ng-class="{'input-error': student.error}"
+					ng-focus="hideStudentError(student)"></td>
+				<td ng-show="student.editStatus"><input type="text"
+					placeholder="Address" ng-model="student.address"
+					class="form-control"></td>
+				<td ng-show="student.editStatus"><input type="text"
+					placeholder="Email Address" ng-model="student.email"
+					class="form-control"></td>
+				<td ng-show="student.editStatus"><input type="text"
+					placeholder="Mobile No." ng-model="student.mobileNo"
+					class="form-control"></td>
+				<td ng-show="student.editStatus"><select
+					ng-model="student.session" class="form-control">
+						<option ng-repeat="session in sessions" value="{{session}}">{{session}}</option>
+				</select></td>
+				<td ng-show="student.editStatus">
+					<button type="button" class="btn btn-success btn-small btn-row"
+						ng-click="saveEditedStudent(student)">Save</button>
+					<button type="button" class="btn btn-danger btn-small btn-row"
+						ng-click="hideEditRow(student)">Cancel</button>
+				</td>
+			</tr>
+		</table>
+		<!-- Student's grid or table ends. -->
+
+	</div>
+</body>
+
+</html>
