@@ -49,7 +49,7 @@ th, td {
 }
 
 .md-button {
-	text-transform: none;
-	font-weight: bold;
+	text-transform: none !important;
+	font-weight: bold !important;
 	color: #337AB7 !important;
 }
