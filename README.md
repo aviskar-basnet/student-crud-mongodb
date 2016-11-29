@@ -24,3 +24,7 @@ Change the properties for MongoDB server, MongoDB port and application port, if 
 Navigate to project directory in command prompt and initiate following commands:
 
 *mvn spring-boot:run*
+
+> Have a great time ahead.
+
+> Happy Coding!!
