@@ -25,6 +25,8 @@ Navigate to project directory in command prompt and initiate following commands:
 
 *mvn spring-boot:run*
 
+Then, browse htttp://localhost:<port> in browser.
+
 > Have a great time ahead.
 
 > Happy Coding!!
