@@ -7,6 +7,14 @@ import com.aviskar.sample.domain.DomainSequence;
 import com.aviskar.sample.repository.DomainSequenceRepository;
 import com.aviskar.sample.service.DomainSequenceService;
 
+/**
+ * Implementation of {@link DomainSequenceService}.
+ * 
+ * @author Aviskar
+ * @since 1.0
+ * @see {@link DomainSequence}
+ *
+ */
 @Service
 public class DomainSequenceServiceImpl implements DomainSequenceService {
 

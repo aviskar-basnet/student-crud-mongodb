@@ -4,6 +4,14 @@ import java.util.List;
 
 import com.aviskar.sample.domain.Student;
 
+/**
+ * Service for {@link Student} domain.
+ * 
+ * @author Aviskar
+ * @since 1.0
+ * @see {@link Student}
+ *
+ */
 public interface StudentService {
 
 	Student save(Student student);

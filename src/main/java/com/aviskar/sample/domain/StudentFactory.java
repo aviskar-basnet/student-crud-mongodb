@@ -1,28 +1,22 @@
 package com.aviskar.sample.domain;
 
+/**
+ * Factory of {@link Student} for creating instance of it.
+ * 
+ * @author Aviskar
+ * @since 1.0
+ * @see {@link Student}
+ * @deprecated It is not being used in this version.
+ * 
+ */
 @Deprecated
-public class StudentFactory implements BaseStudentFactory {
+public interface StudentFactory {
 
-	private StudentFactory() {
+	static final String MORNING_TYPE = "M";
 
-	}
+	static final String AFTERNOON_TYPE = "A";
 
-	private static final BaseStudentFactory STUDENT_FACTORY = new StudentFactory();
+	static final String EVENING_TYPE = "E";
 
-	public static BaseStudentFactory getInstance() {
-		return STUDENT_FACTORY;
-	}
-
-	@Override
-	public Student createStudent(String type) {
-		Student student = null;
-		if (type.equals(MORNING_TYPE)) {
-			student = new MorningStudent();
-		} else if (type.equals(AFTERNOON_TYPE)) {
-			student = new AfternoonStudent();
-		} else if (type.equals(EVENING_TYPE)) {
-			student = new EveningStudent();
-		}
-		return student;
-	}
+	Student createStudent(String type);
 }

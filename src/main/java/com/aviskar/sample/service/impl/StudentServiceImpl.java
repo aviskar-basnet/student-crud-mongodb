@@ -9,6 +9,14 @@ import com.aviskar.sample.domain.Student;
 import com.aviskar.sample.repository.StudentRepository;
 import com.aviskar.sample.service.StudentService;
 
+/**
+ * Implementation of {@link StudentService}.
+ * 
+ * @author Aviskar
+ * @since 1.0
+ * @see {@link Student}
+ *
+ */
 @Service
 public class StudentServiceImpl implements StudentService {
 

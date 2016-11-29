@@ -7,6 +7,16 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 
+/**
+ * Student's domain class.
+ * 
+ * @author Aviskar
+ * @since 1.0
+ * @see {@link MorningStudent}
+ * @see {@link AfternoonStudent}
+ * @see {@link EveningStudent}
+ *
+ */
 @JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME, include = As.PROPERTY, property = "session")
 @JsonSubTypes({ @JsonSubTypes.Type(value = MorningStudent.class, name = "Morning"),
 		@JsonSubTypes.Type(value = AfternoonStudent.class, name = "Afternoon"),

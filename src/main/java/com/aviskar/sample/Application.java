@@ -5,6 +5,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 
+/**
+ * Main application class.
+ * 
+ * @author Aviskar
+ * @since 1.0
+ *
+ */
 @SpringBootApplication
 public class Application extends SpringBootServletInitializer {
 
